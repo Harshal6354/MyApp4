@@ -1,0 +1,14 @@
+<p>employee works!</p>
+<select name="myclass" [(ngModel)]="myclass" (ngModelChange)="Onclick($event)">
+  <option value="user">user</option>
+  <option value="guest">guest</option>
+</select>
+<h2>{{ myclass }}</h2>
+harshal
+<apx-chart
+  [series]="chartOptions.series"
+  [chart]="chartOptions.chart"
+  [xaxis]="chartOptions.xaxis"
+  [title]="chartOptions.title"
+>
+</apx-chart>

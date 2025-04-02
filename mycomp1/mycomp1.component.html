@@ -1,0 +1,13 @@
+<div class="parent">
+    <div class="login-container">
+        <div class="glitch">[ SYSTEM ONLINE ]</div>
+        <h2>Access Terminal</h2>
+        <div class="input-group">
+            <input type="text" name="username" [(ngModel)]="userObj.username" placeholder="username">
+        </div>
+        <div class="input-group">
+            <input type="password" name="password" [(ngModel)]="userObj.password" placeholder="password">
+        </div>
+        <button (click)="onlogin()">Login</button>
+    </div>
+</div>
