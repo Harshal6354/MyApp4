@@ -29,12 +29,10 @@ export class EmployeeComponent {
 
   Onclick(role: string) {
     this.service1.onCLassChange.next(role);
-    debugger;
   }
 
   constructor(private service1: MasterService) {
     this.service1.onCLassChange.subscribe((res: string) => {
-      debugger;
       this.myclass = res;
     });
   }

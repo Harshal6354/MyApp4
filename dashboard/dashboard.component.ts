@@ -1,15 +1,19 @@
 import {
   Component,
-  inject,
   OnInit,
   AfterViewInit,
   CUSTOM_ELEMENTS_SCHEMA,
   ChangeDetectorRef,
 } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { MasterService } from "../../services/master.service";
 import ApexCharts from "apexcharts";
 import { CommonModule } from "@angular/common";
+
+interface SelectedData {
+  series: string; // ✅ This should be a string, not ApexAxisChartSeries
+  x: string;
+  y: number;
+}
 
 @Component({
   selector: "app-dashboard",
@@ -20,37 +24,27 @@ import { CommonModule } from "@angular/common";
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
-  // private service1 = inject(MasterService);
-  // myclass: string = "";
-  // result: string = "";
   constructor(private cdr: ChangeDetectorRef) {}
-  public chartOptions!: {};
-  selectedData: any = null;
+
+  public chartOptions!: Partial<ApexCharts.ApexOptions>;
+  selectedData: SelectedData | null = null;
   showPopup = false;
   popupStyle = { left: "0px", top: "0px" };
-
-  // constructor() {
-  //   this.service1.onRolechange$.subscribe((res: string) => {
-  //     this.result = res;
-  //   });
-  //   this.service1.onCLassChange.subscribe((res: string) => {
-  //     this.myclass = res;
-  //   });
-  // }
+  private chart!: ApexCharts;
 
   ngOnInit(): void {
-    this.initialchart();
+    this.initializeChart();
   }
 
   ngAfterViewInit(): void {
-    const chart = new ApexCharts(
-      document.querySelector("#chart"),
-      this.chartOptions
-    );
-    chart.render();
+    const chartElement = document.querySelector("#chart");
+    if (chartElement) {
+      this.chart = new ApexCharts(chartElement, this.chartOptions);
+      this.chart.render();
+    }
   }
 
-  private initialchart(): void {
+  private initializeChart(): void {
     this.chartOptions = {
       series: [
         {
@@ -77,26 +71,27 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             { min: 10, max: 15 }
           ),
         },
-      ],
+      ] as ApexAxisChartSeries,
       chart: {
         type: "bar",
         height: 400,
         stacked: true,
         events: {
-          dataPointSelection: (event: any, chartContext: any, config: any) => {
-            this.onDataPointClick(event, config);
+          dataPointSelection: (
+            event: MouseEvent,
+            chartContext: ApexCharts,
+            config: {
+              seriesIndex: number;
+              dataPointIndex: number;
+              selectedDataPoints: number[][];
+            }
+          ) => {
+            this.onDataPointClick(event, chartContext, config);
           },
         },
-
-        animations: {
-          enabled: false, // Disable animations if causing issues
-        },
-        zoom: {
-          enabled: false, // Disable zooming if not needed
-        },
-        toolbar: {
-          show: false, // Disable toolbar interactions
-        },
+        animations: { enabled: false },
+        zoom: { enabled: false },
+        toolbar: { show: false },
       },
       colors: ["#008FFB", "#00E396", "#CED4DC"],
       dataLabels: { enabled: false },
@@ -109,47 +104,73 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     };
   }
 
-  public generateDayWiseTimeSeries(
+  private generateDayWiseTimeSeries(
     baseval: number,
     count: number,
     yrange: { min: number; max: number }
-  ) {
-    let i = 0;
-    const series = [];
-    while (i < count) {
+  ): [number, number][] {
+    const series: [number, number][] = [];
+    for (let i = 0; i < count; i++) {
       const x = baseval;
       const y =
         Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
       series.push([x, y]);
       baseval += 86400000;
-      i++;
     }
     return series;
   }
 
-  onDataPointClick(event: MouseEvent, config: any) {
-    this.selectedData = {
-      series: config.w.config.series[config.seriesIndex].name,
-      x: new Date(
-        config.w.config.series[config.seriesIndex].data[
-          config.dataPointIndex
-        ][0]
-      ).toDateString(),
-      y: config.w.config.series[config.seriesIndex].data[
-        config.dataPointIndex
-      ][1],
-    };
+  private onDataPointClick(
+    event: MouseEvent | TouchEvent,
+    chartContext: ApexCharts,
+    config: { seriesIndex: number; dataPointIndex: number }
+  ): void {
+    const seriesItem = this.chartOptions.series?.[config.seriesIndex];
+
+    if (
+      seriesItem &&
+      typeof seriesItem === "object" &&
+      "name" in seriesItem &&
+      Array.isArray(seriesItem.data)
+    ) {
+      const seriesName = seriesItem.name as string;
+      const dataPoint = seriesItem.data[config.dataPointIndex] as [
+        number,
+        number
+      ];
+
+      if (dataPoint) {
+        this.selectedData = {
+          series: seriesName,
+          x: new Date(dataPoint[0]).toDateString(),
+          y: dataPoint[1],
+        };
+      }
+    }
+
+    // ✅ Handle both MouseEvent & TouchEvent
+    let clientX = 0;
+    let clientY = 0;
+
+    if (event instanceof MouseEvent) {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    } else if (event instanceof TouchEvent && event.touches.length > 0) {
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+    }
 
     this.showPopup = true;
     this.popupStyle = {
-      left: `${event.clientX + 10}px`,
-      top: `${event.clientY + 10}px`,
+      left: `${clientX + 10}px`,
+      top: `${clientY + 10}px`,
     };
+
     console.log(this.selectedData);
-    this.cdr.detectChanges(); // 🔥 This forces Angular to update the UI
+    this.cdr.detectChanges();
   }
 
-  closePopup() {
+  closePopup(): void {
     this.showPopup = false;
   }
 }

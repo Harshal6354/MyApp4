@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, ViewChild } from "@angular/core";
 
 import {
-  ApexAnnotations,
   ApexAxisChartSeries,
   ApexChart,
   ApexDataLabels,
@@ -12,10 +11,14 @@ import {
   ApexStroke,
 } from "ng-apexcharts";
 import { ChartOptions } from "../employee/employee.component";
-import { group, style } from "@angular/animations";
-import { Title } from "@angular/platform-browser";
 import { CommonModule } from "@angular/common";
-
+type SelectedData = {
+  seriesName: string; // Instead of 'series'
+  value: number;
+  category: string | number;
+  x: number;
+  y: number;
+};
 export type chartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -76,7 +79,7 @@ export class Newpage1Component implements AfterViewInit {
   };
 
   //chart-2
-  selectedData: any = null;
+  selectedData: SelectedData | null = null;
   @ViewChild("chart2") chartdiv2!: ChartOptions;
 
   public chartoptions2 = {
@@ -107,10 +110,17 @@ export class Newpage1Component implements AfterViewInit {
       stacked: true,
       height: 350,
       events: {
-        dataPointSelection: (event: any, chartContext: any, config: any) => {
+        dataPointSelection: (
+          event: MouseEvent | TouchEvent,
+          chartContext: ApexChart,
+          config: { seriesIndex: number; dataPointIndex: number }
+        ) => {
           this.onDataPointClick(event, config);
         },
       },
+      animations: { enabled: false },
+      zoom: { enabled: false },
+      toolbar: { show: false },
     },
     plotoption: {
       bar: {
@@ -221,25 +231,33 @@ export class Newpage1Component implements AfterViewInit {
     chart3.render();
   }
 
-  onDataPointClick(event: MouseEvent, config: any) {
+  onDataPointClick(
+    event: MouseEvent | TouchEvent,
+    config: { seriesIndex?: number; dataPointIndex?: number }
+  ) {
+    if (
+      typeof config.seriesIndex !== "number" ||
+      typeof config.dataPointIndex !== "number"
+    ) {
+      return;
+    }
+
     const seriesIndex = config.seriesIndex;
     const dataPointIndex = config.dataPointIndex;
 
-    if (seriesIndex === undefined || dataPointIndex === undefined) {
-      console.log("invalid selection");
-      return;
-    }
-    const seriesName = this.chartoptions2.series[seriesIndex].name ?? "unkown";
+    const seriesName =
+      this.chartoptions2.series[seriesIndex]?.name ?? "unknown";
     const value =
       this.chartoptions2.series[seriesIndex]?.data[dataPointIndex] ?? 0;
     const category =
       this.chartoptions2.xaxis.categories[dataPointIndex] ?? "NA";
+
     this.selectedData = {
       seriesName,
       value,
       category,
-      x: event.clientX,
-      y: event.clientY,
+      x: (event as MouseEvent).clientX,
+      y: (event as MouseEvent).clientY,
     };
 
     console.log(this.selectedData);

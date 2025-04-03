@@ -4,6 +4,7 @@ import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
   ViewChild,
+  AfterViewInit,
 } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import {
@@ -18,7 +19,7 @@ import {
   ApexYAxis,
 } from "ng-apexcharts";
 
-export type chartOptions = {
+interface chartOptions {
   series: ApexAxisChartSeries;
   chart: ApexChart;
   xaxis: ApexXAxis; // ✅ Fixed typo
@@ -28,7 +29,7 @@ export type chartOptions = {
   legend: ApexLegend;
   fill: ApexFill;
   tooltip: ApexTooltip;
-};
+}
 
 @Component({
   selector: "app-newchart2",
@@ -38,7 +39,7 @@ export type chartOptions = {
   styleUrl: "./newchart2.component.css",
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class Newchart2Component {
+export class Newchart2Component implements AfterViewInit {
   @ViewChild("chart") chartdiv!: chartOptions;
 
   constructor(private cdr: ChangeDetectorRef) {}
@@ -65,8 +66,19 @@ export class Newchart2Component {
       height: 350,
       type: "line",
       stacked: false,
+      animations: { enabled: false },
+      zoom: { enabled: false },
+      toolbar: { show: false },
       events: {
-        dataPointSelection: (event: any, chartContext: any, config: any) => {
+        dataPointSelection: (
+          event: MouseEvent | TouchEvent,
+          chartContext: ApexCharts,
+          config: {
+            seriesIndex: number;
+            dataPointIndex: number;
+            selectedDataPoints: number[][];
+          }
+        ) => {
           const seriesIndex = config.seriesIndex;
           const dataPointIndex = config.dataPointIndex;
           const seriesName =
