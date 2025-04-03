@@ -1,2 +1,8 @@
 <h1>Chart 2</h1>
 <div id="chart"></div>
+<div *ngIf="selectedData" class="popup">
+  <p><strong>Series Name:</strong> {{ selectedData.seriesName }}</p>
+  <p><strong>Value:</strong> {{ selectedData.value }}</p>
+  <p><strong>Category:</strong> {{ selectedData.category }}</p>
+  <button (click)="closePopup()">Close</button>
+</div>

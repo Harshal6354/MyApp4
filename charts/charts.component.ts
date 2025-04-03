@@ -1,53 +1,71 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import {
-  ApexAxisChartSeries,
-  ApexChart,
-  ApexXAxis,
-  ApexTitleSubtitle,
-  ApexOptions,
-} from 'ng-apexcharts';
+  AfterViewInit,
+  Component,
+  ElementRef,
+  ViewChild,
+  ChangeDetectorRef,
+} from "@angular/core";
+import ApexCharts from "apexcharts";
 
-export type ChartOptions = {
-  series: ApexAxisChartSeries;
-  chart: ApexChart;
-  xaxis: ApexXAxis;
-  title: ApexTitleSubtitle;
-};
 @Component({
-  selector: 'app-charts',
-  standalone: true,
-  templateUrl: './charts.component.html',
-  styleUrl: './charts.component.css',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  selector: "app-charts",
+  templateUrl: "./charts.component.html",
+  styleUrls: ["./charts.component.css"],
 })
-export class ChartsComponent implements OnInit {
-  ngOnInit(): void {}
-  chartOptions = {
+export class ChartsComponent implements AfterViewInit {
+  @ViewChild("chart", { static: false }) chartdiv!: ElementRef; // ✅ Fix: Ensure ViewChild targets the correct element
+  constructor(private cdr: ChangeDetectorRef) {}
+  public chartOptions = {
     series: [
       {
-        name: 'Sample Data',
-        data: [10, 41, 35, 51, 49, 62, 69, 91, 148],
+        name: "Serie1",
+        data: [44, 55, 41, 64, 22, 43, 21],
+      },
+      {
+        name: "Serie2",
+        data: [53, 32, 33, 52, 13, 44, 32],
       },
     ],
     chart: {
-      type: 'line',
-      height: 350,
+      type: "bar",
+      height: 430,
     },
-    title: {
-      text: 'Basic Line Chart',
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        dataLabels: {
+          position: "top",
+        },
+      },
+    },
+    dataLabels: {
+      enabled: true,
+      offsetX: -6,
+      style: {
+        fontSize: "12px",
+        colors: ["#fff"],
+      },
+    },
+    stroke: {
+      show: true,
+      width: 1,
+      colors: ["#fff"],
     },
     xaxis: {
-      categories: [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-      ],
+      categories: [2001, 2002, 2003, 2004, 2005, 2006, 2007],
     },
   };
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      // ✅ Fix: Ensure DOM is ready before rendering
+      if (this.chartdiv?.nativeElement) {
+        const chart = new ApexCharts(
+          this.chartdiv.nativeElement,
+          this.chartOptions
+        );
+        chart.render();
+      }
+    }, 0);
+  }
 }

@@ -1,5 +1,15 @@
+#chart,
+#chart2 {
+  margin-bottom: 100px;
+  margin-top: 50px;
+}
+#c1,
+#c2 {
+  align-items: center;
+}
+
 .popup {
-  position: absolute;
+  position: fixed;
   background: white;
   border: 1px solid #ccc;
   padding: 10px;

@@ -4,44 +4,47 @@ import {
   OnInit,
   AfterViewInit,
   CUSTOM_ELEMENTS_SCHEMA,
-} from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MasterService } from '../../services/master.service';
-import ApexCharts from 'apexcharts';
+  ChangeDetectorRef,
+} from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { MasterService } from "../../services/master.service";
+import ApexCharts from "apexcharts";
+import { CommonModule } from "@angular/common";
 
 @Component({
-  selector: 'app-dashboard',
+  selector: "app-dashboard",
   standalone: true,
-  imports: [FormsModule],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
+  imports: [FormsModule, CommonModule],
+  templateUrl: "./dashboard.component.html",
+  styleUrls: ["./dashboard.component.css"],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
-  private service1 = inject(MasterService);
-  myclass: string = '';
-  result: string = '';
+  // private service1 = inject(MasterService);
+  // myclass: string = "";
+  // result: string = "";
+  constructor(private cdr: ChangeDetectorRef) {}
+  public chartOptions!: {};
+  selectedData: any = null;
+  showPopup = false;
+  popupStyle = { left: "0px", top: "0px" };
 
-  public chartOptions!: {}; // Declare chartOptions variable
-
-  constructor() {
-    this.service1.onRolechange$.subscribe((res: string) => {
-      this.result = res;
-    });
-    this.service1.onCLassChange.subscribe((res: string) => {
-      this.myclass = res;
-    });
-  }
+  // constructor() {
+  //   this.service1.onRolechange$.subscribe((res: string) => {
+  //     this.result = res;
+  //   });
+  //   this.service1.onCLassChange.subscribe((res: string) => {
+  //     this.myclass = res;
+  //   });
+  // }
 
   ngOnInit(): void {
-    // Chart data initialization
     this.initialchart();
   }
 
   ngAfterViewInit(): void {
-    // Ensure chart is rendered after the view is initialized
     const chart = new ApexCharts(
-      document.querySelector('#chart'),
+      document.querySelector("#chart"),
       this.chartOptions
     );
     chart.render();
@@ -51,65 +54,58 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.chartOptions = {
       series: [
         {
-          name: 'South',
+          name: "South",
           data: this.generateDayWiseTimeSeries(
-            new Date('11 Feb 2017 GMT').getTime(),
+            new Date("11 Feb 2017 GMT").getTime(),
             20,
-            {
-              min: 10,
-              max: 60,
-            }
+            { min: 10, max: 60 }
           ),
         },
         {
-          name: 'North',
+          name: "North",
           data: this.generateDayWiseTimeSeries(
-            new Date('11 Feb 2017 GMT').getTime(),
+            new Date("11 Feb 2017 GMT").getTime(),
             20,
-            {
-              min: 10,
-              max: 20,
-            }
+            { min: 10, max: 20 }
           ),
         },
         {
-          name: 'Central',
+          name: "Central",
           data: this.generateDayWiseTimeSeries(
-            new Date('11 Feb 2017 GMT').getTime(),
+            new Date("11 Feb 2017 GMT").getTime(),
             20,
-            {
-              min: 10,
-              max: 15,
-            }
+            { min: 10, max: 15 }
           ),
         },
       ],
       chart: {
-        type: 'line',
+        type: "bar",
         height: 400,
         stacked: true,
         events: {
-          selection: function (chart: ApexCharts, e?: ApexCharts) {},
+          dataPointSelection: (event: any, chartContext: any, config: any) => {
+            this.onDataPointClick(event, config);
+          },
+        },
+
+        animations: {
+          enabled: false, // Disable animations if causing issues
+        },
+        zoom: {
+          enabled: false, // Disable zooming if not needed
+        },
+        toolbar: {
+          show: false, // Disable toolbar interactions
         },
       },
-      colors: ['#008FFB', '#00E396', '#CED4DC'],
-      dataLabels: {
-        enabled: false,
-      },
+      colors: ["#008FFB", "#00E396", "#CED4DC"],
+      dataLabels: { enabled: false },
       fill: {
-        type: 'gradient',
-        gradient: {
-          opacityFrom: 0.4,
-          opacityTo: 0.8,
-        },
+        type: "gradient",
+        gradient: { opacityFrom: 0.4, opacityTo: 0.8 },
       },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'left',
-      },
-      xaxis: {
-        type: 'datetime',
-      },
+      legend: { position: "top", horizontalAlign: "left" },
+      xaxis: { type: "datetime" },
     };
   }
 
@@ -124,11 +120,36 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       const x = baseval;
       const y =
         Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-
       series.push([x, y]);
       baseval += 86400000;
       i++;
     }
     return series;
+  }
+
+  onDataPointClick(event: MouseEvent, config: any) {
+    this.selectedData = {
+      series: config.w.config.series[config.seriesIndex].name,
+      x: new Date(
+        config.w.config.series[config.seriesIndex].data[
+          config.dataPointIndex
+        ][0]
+      ).toDateString(),
+      y: config.w.config.series[config.seriesIndex].data[
+        config.dataPointIndex
+      ][1],
+    };
+
+    this.showPopup = true;
+    this.popupStyle = {
+      left: `${event.clientX + 10}px`,
+      top: `${event.clientY + 10}px`,
+    };
+    console.log(this.selectedData);
+    this.cdr.detectChanges(); // 🔥 This forces Angular to update the UI
+  }
+
+  closePopup() {
+    this.showPopup = false;
   }
 }

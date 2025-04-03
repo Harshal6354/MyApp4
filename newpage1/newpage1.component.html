@@ -1,0 +1,21 @@
+<p>newpage1 works!</p>
+<div class="container">
+  <h1 id="c1">Bar chart</h1>
+  <div id="chart"></div>
+  <h1 id="c2">Bar chart</h1>
+  <div id="chart2"></div>
+
+  <div
+    *ngIf="selectedData"
+    class="popup"
+    [ngStyle]="{ top: selectedData.y + 'px', right: selectedData.x + 'px' }"
+  >
+    <p><strong>Series Name:</strong> {{ selectedData.seriesName }}</p>
+    <p><strong>Value:</strong> {{ selectedData.value }}</p>
+    <p><strong>Category:</strong> {{ selectedData.category }}</p>
+    <button (click)="closePopup()">Close</button>
+  </div>
+
+  <h1>mix chart</h1>
+  <div id="chart3"></div>
+</div>

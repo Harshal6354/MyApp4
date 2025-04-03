@@ -5,3 +5,11 @@
 </h1> -->
 <!-- <apex-chart [series]="series" [chart]="chart" [series]="series"></apex-chart> -->
 <div id="chart"></div>
+
+<!-- Popup Modal -->
+<div *ngIf="showPopup" class="popup" [ngStyle]="popupStyle">
+  <p><strong>Series:</strong> {{ selectedData.series }}</p>
+  <p><strong>Date:</strong> {{ selectedData.x }}</p>
+  <p><strong>Value:</strong> {{ selectedData.y }}</p>
+  <button (click)="closePopup()">Close</button>
+</div>

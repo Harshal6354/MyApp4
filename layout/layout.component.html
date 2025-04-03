@@ -1,140 +1,78 @@
-<div class="row">
-  <div class="col-3">
-    <div
-      class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark vh-100"
-      style="width: 280px"
+<div class="d-flex">
+  <!-- Sidebar -->
+  <div
+    class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark"
+    style="width: 280px; height: 100vh; position: fixed"
+  >
+    <a
+      routerLink="/dashboard"
+      class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
     >
-      <a
-        routerLink="/dashboard"
-        class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
-      >
-        <svg class="bi me-2" width="40" height="32">
-          <use xlink:href="#bootstrap"></use>
-        </svg>
-        <span class="fs-4">Sidebar</span>
-      </a>
-      <hr />
-      <ul class="nav nav-pills flex-column mb-auto">
-        <li class="nav-item">
-          <a
-            routerLink="/dashboard"
-            routerLinkActive="active"
-            class="nav-link active"
-            aria-current="page"
-          >
-            <svg class="bi me-2" width="16" height="16">
-              <use xlink:href="#home"></use>
-            </svg>
-            Home
-          </a>
-        </li>
-        <li>
-          <a
-            routerLink="employee"
-            routerLinkActive="active"
-            class="nav-link text-white"
-          >
-            <svg class="bi me-2" width="16" height="16">
-              <use xlink:href="#speedometer2"></use>
-            </svg>
-            employee
-          </a>
-        </li>
-        <li>
-          <a
-            routerLink="chart"
-            routerLinkActive="active"
-            class="nav-link text-white"
-          >
-            <svg class="bi me-2" width="16" height="16">
-              <use xlink:href="#speedometer2"></use>
-            </svg>
-            chart
-          </a>
-        </li>
-        <li>
-          <a
-            routerLink="newchart2"
-            routerLinkActive="active"
-            class="nav-link text-white"
-          >
-            <svg class="bi me-2" width="16" height="16">
-              <use xlink:href="#speedometer2"></use>
-            </svg>
-            newchart2
-          </a>
-        </li>
-        <li>
-          <a
-            href="/dashboard"
-            class="nav-link text-white"
-            routerLinkActive="active"
-          >
-            <svg class="bi me-2" width="16" height="16">
-              <use xlink:href="#table"></use>
-            </svg>
-            Orders2
-          </a>
-        </li>
-        <li>
-          <select
-            class="align-items-center bg-dark"
-            style="margin-left: 40px; color: aliceblue"
-            name="selectRole"
-            id="selectRole"
-            [(ngModel)]="selectRole"
-            (ngModelChange)="changeRole($event)"
-          >
-            <option value="">select</option>
-            <option value="User">User</option>
-            <option value="Guest">Guest</option>
-          </select>
-        </li>
-        <li>
-          <a
-            href="/dashboard"
-            class="nav-link text-white"
-            routerLinkActive="active"
-          >
-            <svg class="bi me-2" width="16" height="16">
-              <use xlink:href="#people-circle"></use>
-            </svg>
-            Customers
-          </a>
-        </li>
-      </ul>
-      <hr />
-      <div class="dropdown">
+      <span class="fs-4">Sidebar</span>
+    </a>
+    <hr />
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li class="nav-item">
         <a
-          href="#"
-          class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-          id="dropdownUser1"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
+          routerLink="/dashboard"
+          routerLinkActive="active"
+          class="nav-link active"
+          aria-current="page"
         >
-          <img
-            src="https://github.com/mdo.png"
-            alt=""
-            width="32"
-            height="32"
-            class="rounded-circle me-2"
-          />
-          <strong>mdo</strong>
+          Home
         </a>
-        <ul
-          class="dropdown-menu dropdown-menu-dark text-small shadow"
-          aria-labelledby="dropdownUser1"
+      </li>
+      <li><a routerLink="employee" class="nav-link text-white">Employee</a></li>
+      <li><a routerLink="chart" class="nav-link text-white">Chart</a></li>
+      <li>
+        <a routerLink="newchart2" class="nav-link text-white">New Chart 2</a>
+      </li>
+      <li>
+        <a routerLink="newpage1" class="nav-link text-white">New Page 1</a>
+      </li>
+      <li>
+        <select
+          class="bg-dark text-white border-0"
+          style="margin-left: 40px"
+          [(ngModel)]="selectRole"
+          (ngModelChange)="changeRole($event)"
         >
-          <li><a class="dropdown-item" href="#">New project...</a></li>
-          <li><a class="dropdown-item" href="#">Settings</a></li>
-          <li><a class="dropdown-item" href="#">Profile</a></li>
-          <li><hr class="dropdown-divider" /></li>
-          <li><a class="dropdown-item" href="#">Sign out</a></li>
-        </ul>
-      </div>
+          <option value="">Select</option>
+          <option value="User">User</option>
+          <option value="Guest">Guest</option>
+        </select>
+      </li>
+      <li>
+        <a routerLink="/dashboard" class="nav-link text-white">Customers</a>
+      </li>
+    </ul>
+    <hr />
+    <div class="dropdown">
+      <a
+        href="#"
+        class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+        id="dropdownUser1"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <img src="" alt="" width="32" height="32" class="rounded-circle me-2" />
+        <strong>mdo</strong>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+        <li><a class="dropdown-item" href="#">New project...</a></li>
+        <li><a class="dropdown-item" href="#">Settings</a></li>
+        <li><a class="dropdown-item" href="#">Profile</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" href="#">Sign out</a></li>
+      </ul>
     </div>
   </div>
-  <div class="col-9">
-    <router-outlet />
+
+  <!-- Main Content -->
+  <div
+    class="content-area"
+    style="margin-left: 280px; padding: 20px; width: calc(100% - 280px)"
+  >
+    <router-outlet></router-outlet>
   </div>
 </div>
